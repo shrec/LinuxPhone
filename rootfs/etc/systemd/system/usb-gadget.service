@@ -1,0 +1,11 @@
+[Unit]
+Description=USB network gadget (NCM)
+After=sys-kernel-config.mount
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/usb-gadget
+
+[Install]
+WantedBy=multi-user.target

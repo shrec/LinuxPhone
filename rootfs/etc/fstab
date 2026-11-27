@@ -1,0 +1,2 @@
+# The image is small; systemd grows it to fill the userdata partition on first boot.
+LABEL=lp_root  /  ext4  defaults,x-systemd.growfs  0 1

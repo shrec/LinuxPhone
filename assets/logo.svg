@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="600" viewBox="0 0 640 600" role="img" aria-label="revive">
+  <rect width="640" height="600" fill="#000"/>
+  <g transform="translate(200 40) scale(2)" fill="none" stroke="#39ff88" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M60 12 A48 48 0 1 1 18.4 36"/>
+    <polyline points="8,28 18.4,36 28,27"/>
+    <polyline points="40,44 56,60 40,76"/>
+    <line x1="62" y1="78" x2="82" y2="78"/>
+  </g>
+  <text x="320" y="440" text-anchor="middle" font-family="JetBrains Mono" font-weight="800" font-size="104" letter-spacing="-3" fill="#39ff88">revive</text>
+  <text x="320" y="510" text-anchor="middle" font-family="JetBrains Mono" font-size="34" fill="#8fb59c">your phone's second life</text>
+</svg>
