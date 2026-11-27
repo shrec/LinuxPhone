@@ -19,9 +19,8 @@ UtmpMode=user
 StandardInput=tty-fail
 StandardOutput=journal
 StandardError=journal
-EnvironmentFile=-/etc/revive/shell.env
 Environment=XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=revive
-ExecStart=/usr/bin/revive-shell
+ExecStart=/usr/bin/phoc -C /etc/phoc/phoc.ini -E /usr/bin/revive-shell
 Restart=on-failure
 RestartSec=1
 

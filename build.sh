@@ -41,7 +41,7 @@ echo "== rootfs (Debian forky arm64)"
 R=$W/rootfs; D=$SRC/devices/$DEVICE; rm -rf "$R"
 # Files: the OS-wide overlay, then the device's own (devices/<name>/rootfs) on top.
 mmdebstrap --mode=root --arch=arm64 --variant=minbase --components=main,non-free-firmware \
-  --include=systemd-sysv,udev,dbus,kmod,iproute2,openssh-server,sudo,kbd,nano,less,busybox-static,buffyboard,iwd,wireless-regdb,systemd-resolved,systemd-timesyncd,dbus-user-session,foot,fonts-jetbrains-mono,hicolor-icon-theme,libgl1-mesa-dri,libegl1,qt6-qpa-plugins,qt6-wayland,qml6-module-qtquick,qml6-module-qtquick-window,qml6-module-qtwayland-compositor${PACKAGES:+,$PACKAGES} \
+  --include=systemd-sysv,udev,dbus,kmod,iproute2,openssh-server,sudo,kbd,nano,less,busybox-static,buffyboard,iwd,wireless-regdb,systemd-resolved,systemd-timesyncd,dbus-user-session,foot,fonts-jetbrains-mono,hicolor-icon-theme,libgl1-mesa-dri,libegl1,qt6-qpa-plugins,qt6-wayland,qml6-module-qtquick,qml6-module-qtquick-window,phoc,layer-shell-qt,qml6-module-org-kde-layershell${PACKAGES:+,$PACKAGES} \
   --customize-hook="for o in $SRC/rootfs $D/rootfs; do [ ! -d \$o ] || cp -r --no-preserve=mode,ownership \$o/. \"\$1\"/; done; chmod 755 \"\$1\"/usr/local/*bin/*" \
   --customize-hook='printf "revive (built %s) \\\\l\\n\\n" "$(date -u "+%F %H:%M UTC")" > "$1/etc/issue"' \
   --customize-hook="chroot \"\$1\" sh -ec '
@@ -73,7 +73,7 @@ B=/work/sdk-forky
 if [ ! -d "$B" ]; then
   rm -rf "$B.tmp"
   mmdebstrap --mode=root --arch=arm64 --variant=apt \
-    --include=build-essential,cmake,qt6-base-dev,qt6-declarative-dev forky "$B.tmp" http://deb.debian.org/debian
+    --include=build-essential,cmake,qt6-base-dev,qt6-declarative-dev,qt6-wayland-dev,qt6-wayland-private-dev,libwayland-dev forky "$B.tmp" http://deb.debian.org/debian
   mv "$B.tmp" "$B"
 fi
 cp /etc/resolv.conf "$B/etc/resolv.conf"
@@ -86,7 +86,6 @@ chroot "$B" sh -ec 'cmake -S /src -B /src/build -DCMAKE_BUILD_TYPE=Release >/dev
   DESTDIR=/out cmake --install /src/build --prefix /usr'
 umount "$B/proc"; trap - EXIT
 cp -a "$B/out/." "$R/"
-mkdir -p "$R/etc/revive"; echo "REVIVE_SCALE=${SCALE:-1}" > "$R/etc/revive/shell.env"
 
 echo "== initramfs"
 # Mounts the rootfs by filesystem label, ignoring the root= the Android bootloader appends.
