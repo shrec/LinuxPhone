@@ -9,3 +9,5 @@ out/
 .vscode/
 AGENTS.md
 CLAUDE.md
+build-win/
+shell/build*/
