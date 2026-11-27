@@ -1,0 +1,192 @@
+{
+  "databases": [
+    {
+      "authority": {
+        "canonical_active": true,
+        "legacy_active": false,
+        "live_cutover": true,
+        "state": "canonical_active"
+      },
+      "canonical_durable_path": "tasking/task_queue.sqlite",
+      "component": "task_mcp",
+      "id": "task_queue"
+    },
+    {
+      "authority": {
+        "canonical_active": true,
+        "legacy_active": false,
+        "live_cutover": true,
+        "state": "canonical_active"
+      },
+      "canonical_durable_path": "source_graph/source_graph.sqlite",
+      "component": "source_graph",
+      "id": "source_graph",
+      "integrity": {
+        "canonical_sha256": "0a21b6446756fc8493a8bb646041164e561ec507ac4c17646b22ba2edb895f2b",
+        "rollback_source_sha256": "0a21b6446756fc8493a8bb646041164e561ec507ac4c17646b22ba2edb895f2b",
+        "state": "canonical_quick_check_ok"
+      },
+      "migration": {
+        "cutover_performed": true,
+        "generation": 1,
+        "legacy_deleted": false,
+        "rollback_performed": false,
+        "rollback_source_hash": "0a21b6446756fc8493a8bb646041164e561ec507ac4c17646b22ba2edb895f2b",
+        "source_read_only": true
+      }
+    },
+    {
+      "authority": {
+        "canonical_active": true,
+        "legacy_active": false,
+        "live_cutover": true,
+        "state": "canonical_active"
+      },
+      "canonical_durable_path": "source_graph/universal.sqlite",
+      "component": "source_graph",
+      "id": "universal",
+      "integrity": {
+        "canonical_sha256": "f4f5aa7e4cf5c92fe987f948de4ced7f71642b60d994a948ed415e6c79b948fc",
+        "rollback_source_sha256": "f4f5aa7e4cf5c92fe987f948de4ced7f71642b60d994a948ed415e6c79b948fc",
+        "state": "canonical_quick_check_ok"
+      },
+      "migration": {
+        "cutover_performed": true,
+        "generation": 1,
+        "legacy_deleted": false,
+        "rollback_performed": false,
+        "rollback_source_hash": "f4f5aa7e4cf5c92fe987f948de4ced7f71642b60d994a948ed415e6c79b948fc",
+        "source_read_only": true
+      }
+    },
+    {
+      "authority": {
+        "canonical_active": true,
+        "legacy_active": false,
+        "live_cutover": true,
+        "state": "canonical_active"
+      },
+      "canonical_durable_path": "sessions/sessions.sqlite",
+      "component": "sessions",
+      "id": "session",
+      "integrity": {
+        "canonical_sha256": "f4f5aa7e4cf5c92fe987f948de4ced7f71642b60d994a948ed415e6c79b948fc",
+        "rollback_source_sha256": "f4f5aa7e4cf5c92fe987f948de4ced7f71642b60d994a948ed415e6c79b948fc",
+        "state": "canonical_quick_check_ok"
+      },
+      "migration": {
+        "cutover_performed": true,
+        "generation": 1,
+        "legacy_deleted": false,
+        "rollback_performed": false,
+        "rollback_source_hash": "f4f5aa7e4cf5c92fe987f948de4ced7f71642b60d994a948ed415e6c79b948fc",
+        "source_read_only": true
+      }
+    },
+    {
+      "authority": {
+        "canonical_active": true,
+        "legacy_active": false,
+        "live_cutover": true,
+        "state": "canonical_active"
+      },
+      "canonical_durable_path": "sessions/transcript_graph.sqlite",
+      "component": "sessions",
+      "id": "transcript",
+      "integrity": {
+        "canonical_sha256": "f8b6bcbf66d870cac2dae30173599bbd44371cf1613938e100ed8f4d7b2cfd1b",
+        "rollback_source_sha256": "f8b6bcbf66d870cac2dae30173599bbd44371cf1613938e100ed8f4d7b2cfd1b",
+        "state": "canonical_quick_check_ok"
+      },
+      "migration": {
+        "cutover_performed": true,
+        "generation": 1,
+        "legacy_deleted": false,
+        "rollback_performed": false,
+        "rollback_source_hash": "f8b6bcbf66d870cac2dae30173599bbd44371cf1613938e100ed8f4d7b2cfd1b",
+        "source_read_only": true
+      }
+    },
+    {
+      "authority": {
+        "canonical_active": true,
+        "legacy_active": false,
+        "live_cutover": true,
+        "state": "canonical_active"
+      },
+      "canonical_durable_path": "memory/memory.sqlite",
+      "component": "memory",
+      "id": "memory",
+      "integrity": {
+        "canonical_sha256": "04a9ccd1c43bfaa1d160d06bb4a1fa8d2010b708846b8a7938878d0d57af222b",
+        "rollback_source_sha256": "04a9ccd1c43bfaa1d160d06bb4a1fa8d2010b708846b8a7938878d0d57af222b",
+        "state": "canonical_quick_check_ok"
+      },
+      "migration": {
+        "cutover_performed": true,
+        "generation": 1,
+        "legacy_deleted": false,
+        "rollback_performed": false,
+        "rollback_source_hash": "04a9ccd1c43bfaa1d160d06bb4a1fa8d2010b708846b8a7938878d0d57af222b",
+        "source_read_only": true
+      }
+    },
+    {
+      "authority": {
+        "canonical_active": true,
+        "legacy_active": false,
+        "live_cutover": true,
+        "state": "canonical_active"
+      },
+      "canonical_durable_path": "kb/knowledge.sqlite",
+      "component": "kb",
+      "id": "kb",
+      "integrity": {
+        "canonical_sha256": "f42693bba72136d5a9e1c0c25d91b6b26ff9be81c703e44435894c0b0cc3956f",
+        "rollback_source_sha256": "f42693bba72136d5a9e1c0c25d91b6b26ff9be81c703e44435894c0b0cc3956f",
+        "state": "canonical_quick_check_ok"
+      },
+      "migration": {
+        "cutover_performed": true,
+        "generation": 1,
+        "legacy_deleted": false,
+        "rollback_performed": false,
+        "rollback_source_hash": "f42693bba72136d5a9e1c0c25d91b6b26ff9be81c703e44435894c0b0cc3956f",
+        "source_read_only": true
+      }
+    }
+  ],
+  "durable_root": ".aiworkhub",
+  "host_absolute_paths_allowed": false,
+  "migration_policy": {
+    "legacy_locations_are_read_only": true,
+    "no_legacy_delete_in_this_registry": true,
+    "no_live_cutover_in_this_registry": true
+  },
+  "portable": true,
+  "registry_path": "config/storage.json",
+  "registry_version": 1,
+  "repo_id": "repo_8a6af222e3454c788ed67636da61f556",
+  "runtime_policy": {
+    "durable": false,
+    "ignored": true,
+    "path": "runtime",
+    "runtime_only_patterns": [
+      "*.sqlite-wal",
+      "*.sqlite-shm",
+      "*.db-wal",
+      "*.db-shm",
+      "*.lock",
+      "*.sock",
+      "credentials/*",
+      "worktrees/*",
+      "backups/*"
+    ],
+    "sqlite_policy": {
+      "backup_payloads_are_runtime_only_until_promoted": true,
+      "main_files_are_durable": true,
+      "wal_shm_are_runtime_only": true
+    }
+  },
+  "schema_id": "aiworkhub.storage_registry.v1"
+}

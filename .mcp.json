@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "AIWorkHub": {
+      "command": "py",
+      "args": [
+        "-3",
+        "c:\\Users\\shrek\\AppData\\Roaming\\Code\\User\\globalStorage\\ivanechkheidze.aiworkhub\\bin\\aiworkhub-mcp-server.py"
+      ],
+      "env": {
+        "AIWORKHUB_REPO": "D:\\Dev\\LinuxPhone",
+        "AIWORKHUB_REPO_ROOT": "D:\\Dev\\LinuxPhone",
+        "AIWORKHUB_MCP_STDIO_BACKEND": "stdlib",
+        "AIWORKHUB_MCP_SURFACE": "manager",
+        "AIWORKHUB_ALLOW_WRITES": "1",
+        "AIWORKHUB_ALLOW_LAUNCH": "1"
+      },
+      "type": "stdio"
+    }
+  }
+}

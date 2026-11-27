@@ -1,0 +1,43 @@
+{
+  "schema_id": "aiworkhub.window_route.v1",
+  "repo_id": "repo_8a6af222e3454c788ed67636da61f556",
+  "window_id": "window_22349d689d0a964bb0758734",
+  "extension_host_pid": 49332,
+  "selected_provider": "codex",
+  "targets": {
+    "codex": {
+      "provider": "codex",
+      "capability_state": "route_pending",
+      "route": {
+        "repo_id": "repo_8a6af222e3454c788ed67636da61f556",
+        "window_id": "window_22349d689d0a964bb0758734",
+        "claim_episode": "episode_c9eb86a6e357e424e78a8bdb",
+        "thread_id": "",
+        "session_id": "episode_c9eb86a6e357e424e78a8bdb"
+      },
+      "wake": {
+        "mode": "direct_api_or_callback_inbox",
+        "supported": false,
+        "reason": "codex_thread_id_not_observed"
+      }
+    },
+    "claude": {
+      "provider": "claude",
+      "capability_state": "callback_required",
+      "route": {
+        "repo_id": "repo_8a6af222e3454c788ed67636da61f556",
+        "window_id": "window_22349d689d0a964bb0758734",
+        "claim_episode": "episode_c9eb86a6e357e424e78a8bdb",
+        "thread_id": "claude:window_22349d689d0a964bb0758734",
+        "session_id": "episode_ff22d562b357501f4f78f8ff"
+      },
+      "wake": {
+        "mode": "durable_callback_inbox",
+        "supported": false,
+        "action": "notify_and_open_chat"
+      }
+    }
+  },
+  "updated_at": "2026-11-27T20:37:40.945Z",
+  "lease_expires_at": "2026-11-27T20:52:40.945Z"
+}

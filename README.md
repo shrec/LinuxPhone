@@ -11,7 +11,7 @@ keyboard, and you can SSH in over USB. The graphical UI comes next.
 
 | Device | Codename | Kernel | Status |
 |---|---|---|---|
-| Xiaomi Mi A2 | `xiaomi-jasmine` | [sdm660-mainline](https://github.com/sdm660-mainline/linux) 7.2 | boots to login · display, touch, vibration work · USB network to Windows: WIP · Wi-Fi: next |
+| Xiaomi Mi A2 | `xiaomi-jasmine` | [sdm660-mainline](https://github.com/sdm660-mainline/linux) 7.2 | stage 1 done: display, touch, on-screen keyboard, USB network + SSH (tested on Windows 11), ~240 MB RAM idle · Wi-Fi (iwd) |
 
 ## Build
 
@@ -57,6 +57,8 @@ Later builds reuse the `linuxphone-work` Docker volume.
   ```sh
   ssh phone@172.16.42.1
   ```
+
+If SSH doesn't connect, run `usbinfo` on the phone. It shows the USB link state.
 
 The default login is `phone` / `1234`. **Change it** with `passwd`. Each phone generates its own SSH host
 keys on first boot.

@@ -38,17 +38,25 @@ done
 
 echo "== rootfs (Debian forky arm64)"
 # ponytail: forky (testing) because buffyboard isn't in trixie; move to stable once it lands there.
-R=$W/rootfs; rm -rf "$R"
+R=$W/rootfs; D=$SRC/devices/$DEVICE; rm -rf "$R"
+# Files: the OS-wide overlay, then the device's own (devices/<name>/rootfs) on top.
 mmdebstrap --mode=root --arch=arm64 --variant=minbase \
-  --include=systemd-sysv,udev,dbus,kmod,iproute2,openssh-server,sudo,kbd,nano,less,busybox-static,buffyboard \
-  --customize-hook="cp -r --no-preserve=mode,ownership $SRC/rootfs/. \"\$1\"/ && chmod 755 \"\$1\"/usr/local/sbin/*" \
+  --include=systemd-sysv,udev,dbus,kmod,iproute2,openssh-server,sudo,kbd,nano,less,busybox-static,buffyboard,iwd,wireless-regdb,systemd-resolved${PACKAGES:+,$PACKAGES} \
+  --customize-hook="for o in $SRC/rootfs $D/rootfs; do [ ! -d \$o ] || cp -r --no-preserve=mode,ownership \$o/. \"\$1\"/; done; chmod 755 \"\$1\"/usr/local/*bin/*" \
   --customize-hook='printf "revive (built %s) \\\\l\\n\\n" "$(date -u "+%F %H:%M UTC")" > "$1/etc/issue"' \
-  --customize-hook='chroot "$1" sh -ec "
+  --customize-hook="chroot \"\$1\" sh -ec '
       useradd -m -s /bin/bash -G sudo phone; echo phone:1234 | chpasswd
       rm -f /etc/ssh/ssh_host_*
-      systemctl enable systemd-networkd usb-gadget buffyboard ssh"' \
+      systemctl enable systemd-networkd systemd-resolved iwd usb-gadget buffyboard ssh ${SERVICES:-}'" \
   forky "$R" http://deb.debian.org/debian
 "${KMAKE[@]}" modules_install INSTALL_MOD_PATH="$R/usr" INSTALL_MOD_STRIP=1
+
+# Device firmware the phone's own partitions don't carry (e.g. ath10k's board/feature files).
+if [ -n "${FIRMWARE_URL:-}" ]; then
+  curl -fsSL "$FIRMWARE_URL" -o "$W/firmware.tar.gz"
+  echo "$FIRMWARE_SHA512  $W/firmware.tar.gz" | sha512sum -c --quiet -
+  tar -xzif "$W/firmware.tar.gz" -C "$R" --no-same-owner --wildcards 'usr/lib/firmware/*' 2>/dev/null
+fi
 
 echo "== initramfs"
 # Mounts the rootfs by filesystem label, ignoring the root= the Android bootloader appends.

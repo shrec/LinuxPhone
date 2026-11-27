@@ -1,0 +1,22 @@
+#!/bin/sh
+# Make the phone's own Qualcomm firmware, kept on its Android partitions, visible to the kernel
+# (mounted read-only, nothing copied), then boot the modem DSP, which runs Wi-Fi.
+set -e
+slot=$(sed -n 's/.*androidboot.slot_suffix=\([a-z_]*\).*/\1/p' /proc/cmdline)
+P=/run/firmware-parts F=/run/firmware
+part() { [ -e "/dev/disk/by-partlabel/$1$slot" ] && echo "/dev/disk/by-partlabel/$1$slot" || echo "/dev/disk/by-partlabel/$1"; }
+
+for p in modem bluetooth; do
+  mkdir -p "$P/$p"
+  mountpoint -q "$P/$p" || mount -o ro "$(part $p)" "$P/$p"
+done
+mkdir -p "$F/qca"
+ln -sf "$P"/modem/image/* "$F/"
+ln -sf "$P"/bluetooth/image/* "$F/qca/"
+printf %s "$F" > /sys/module/firmware_class/parameters/path
+
+# The modem (MSS) remoteproc failed at boot for lack of firmware; start it now.
+for r in /sys/class/remoteproc/*; do
+  [ "$(cat "$r/firmware")" = mba.mbn ] && [ "$(cat "$r/state")" = offline ] && echo start > "$r/state"
+done
+exit 0

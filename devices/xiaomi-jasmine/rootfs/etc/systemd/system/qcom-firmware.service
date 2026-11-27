@@ -1,0 +1,12 @@
+[Unit]
+Description=Load firmware from the phone's partitions and boot the modem (Wi-Fi)
+After=systemd-udev-settle.service rmtfs.service tqftpserv.service
+Wants=rmtfs.service tqftpserv.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/qcom-firmware
+
+[Install]
+WantedBy=multi-user.target

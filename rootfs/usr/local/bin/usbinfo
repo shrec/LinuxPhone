@@ -1,0 +1,10 @@
+#!/bin/sh
+# Quick USB-network diagnostics, short enough to type on the on-screen keyboard.
+G=/sys/kernel/config/usb_gadget/g1
+for u in /sys/class/udc/*; do
+  echo "udc:    $(basename "$u")  state=$(cat "$u/state")  speed=$(cat "$u/current_speed")"
+done
+echo "gadget: $(cat $G/idVendor):$(cat $G/idProduct)  class=$(cat $G/bDeviceClass)  bound=$(cat $G/UDC)"
+echo "funcs:  $(ls $G/configs/c.1 | grep -v -e strings -e MaxPower -e bmAttributes)"
+ip -br addr show usb0 2>/dev/null || echo "usb0:   missing"
+echo "services (gadget networkd ssh): $(systemctl is-active usb-gadget systemd-networkd ssh | paste -sd' ')"

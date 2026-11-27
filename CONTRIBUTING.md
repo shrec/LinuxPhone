@@ -13,6 +13,10 @@ A phone is one folder: `devices/<vendor>-<codename>/`. Nothing outside it should
    - `DTB`: the device tree path under `arch/arm64/boot/dts/`, without `.dtb`.
    - `CMDLINE`: the kernel command line.
    - `BOOTIMG_ARGS`: `mkbootimg` page size and offsets. postmarketOS's `deviceinfo` for the phone lists them as `deviceinfo_flash_*`.
+   - Optional: `PACKAGES` (extra Debian packages, comma-separated), `SERVICES` (systemd units to
+     enable), `FIRMWARE_URL` + `FIRMWARE_SHA512` (a tarball whose `usr/lib/firmware/` goes into the image).
+   - Optional: `devices/<name>/rootfs/`, files copied over the OS-wide `rootfs/`. Prefer loading
+     firmware from the phone's own partitions at boot, as `xiaomi-jasmine` does, over shipping copies.
 3. **`kernel.config`:** options appended to the defconfig. Anything needed to reach the rootfs
    (storage controller, its clocks, ext4) must be `=y`, because the initramfs carries no modules.
    `build.sh` fails if an option doesn't stick.
