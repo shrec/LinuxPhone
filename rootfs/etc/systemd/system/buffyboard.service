@@ -1,8 +1,12 @@
 [Unit]
 Description=On-screen keyboard for the text console
+After=getty@tty1.service
 
 [Service]
 ExecStart=/usr/bin/buffyboard
+# ponytail: redraw once the console has settled (it may clear the screen after we start).
+# SIGUSR1 is buffyboard's own "redraw" signal.
+ExecStartPost=/bin/sh -c 'sleep 3; kill -USR1 $MAINPID'
 Restart=always
 RestartSec=2
 
