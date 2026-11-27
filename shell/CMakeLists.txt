@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 project(revive-shell LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Test)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Qml Quick Test)
 qt_standard_project_setup(REQUIRES 6.5)
 
 # Pure logic, no GUI: unit-tested on its own.
@@ -14,6 +14,15 @@ enable_testing()
 qt_add_executable(tst_desktopentry tests/tst_desktopentry.cpp)
 target_link_libraries(tst_desktopentry PRIVATE revive_core Qt6::Test)
 add_test(NAME desktopentry COMMAND tst_desktopentry)
+
+qt_add_executable(revive-shell src/main.cpp src/appmodel.cpp src/appmodel.h src/iconprovider.h)
+set_source_files_properties(qml/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+qt_add_qml_module(revive-shell
+    URI Revive.Shell
+    VERSION 1.0
+    QML_FILES qml/Main.qml qml/Theme.qml)
+target_link_libraries(revive-shell PRIVATE revive_core Qt6::Gui Qt6::Qml Qt6::Quick)
+install(TARGETS revive-shell RUNTIME DESTINATION bin)
 
 if(WIN32)
   get_filename_component(_cxx_bin "${CMAKE_CXX_COMPILER}" DIRECTORY)
