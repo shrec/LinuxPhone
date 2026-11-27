@@ -6,18 +6,16 @@
 
 int main(int argc, char *argv[])
 {
-    // Runs straight on KMS; REVIVE_SCALE comes from the device (/etc/revive/shell.env).
+    // Runs as a layer-shell client on phoc: wayland platform, scale comes from wl_output.
     if (qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM"))
-        qputenv("QT_QPA_PLATFORM", "eglfs");
-    qputenv("QT_QPA_EGLFS_HIDECURSOR", "1");
-    const int scale = qMax(1, qEnvironmentVariableIntValue("REVIVE_SCALE"));
-    qputenv("QT_SCALE_FACTOR", QByteArray::number(scale));
+        qputenv("QT_QPA_PLATFORM", "wayland");
+    if (qEnvironmentVariableIsEmpty("QT_WAYLAND_SHELL_INTEGRATION"))
+        qputenv("QT_WAYLAND_SHELL_INTEGRATION", "layer-shell");
 
     QGuiApplication app(argc, argv);
     QIcon::setThemeName("hicolor");
     QQmlApplicationEngine engine;
     engine.addImageProvider("icon", new IconProvider);
-    engine.rootContext()->setContextProperty("outputScale", scale);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed, &app,
                      [] { QCoreApplication::exit(1); }, Qt::QueuedConnection);
     engine.loadFromModule("Revive.Shell", "Main");

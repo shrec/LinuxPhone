@@ -15,14 +15,16 @@ qt_add_executable(tst_desktopentry tests/tst_desktopentry.cpp)
 target_link_libraries(tst_desktopentry PRIVATE revive_core Qt6::Test)
 add_test(NAME desktopentry COMMAND tst_desktopentry)
 
+if(UNIX AND NOT APPLE)
 qt_add_executable(revive-shell src/main.cpp src/appmodel.cpp src/appmodel.h src/iconprovider.h)
 set_source_files_properties(qml/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 qt_add_qml_module(revive-shell
     URI Revive.Shell
     VERSION 1.0
-    QML_FILES qml/Main.qml qml/Theme.qml)
+    QML_FILES qml/Main.qml qml/Theme.qml qml/StatusBar.qml qml/Launcher.qml)
 target_link_libraries(revive-shell PRIVATE revive_core Qt6::Gui Qt6::Qml Qt6::Quick)
 install(TARGETS revive-shell RUNTIME DESTINATION bin)
+endif()
 
 if(WIN32)
   get_filename_component(_cxx_bin "${CMAKE_CXX_COMPILER}" DIRECTORY)

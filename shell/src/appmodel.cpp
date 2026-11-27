@@ -49,7 +49,7 @@ bool AppModel::launch(const QString &appId)
     const AppEntry *e = find(appId);
     if (!e) return false;
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("WAYLAND_DISPLAY", "wayland-0");
+    // WAYLAND_DISPLAY is inherited from the shell's environment (phoc sets it).
     env.insert("QT_QPA_PLATFORM", "wayland");
     env.insert("GDK_BACKEND", "wayland");
     env.insert("SDL_VIDEODRIVER", "wayland");
