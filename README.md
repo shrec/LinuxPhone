@@ -6,8 +6,18 @@
 mainline Linux kernel and a Debian userland, with no Google services, no Halium and no Android
 userspace underneath.
 
-**Status: stage 1, boot to a terminal.** The phone boots to a text console with an on-screen
-keyboard, and you can SSH in over USB. The graphical UI comes next.
+**Status: the revive shell runs on the phone.** phoc (wlroots) with revive's own status bar,
+launcher and home gesture; Debian apps run on it (terminal, Calls, Chats, Contacts). Calls and SMS
+wait on the modem, which still crashes on this phone.
+
+<p align="center">
+  <img src="docs/screenshots/2026-11-28-home.png" width="180" alt="home screen">
+  <img src="docs/screenshots/2026-11-28-terminal.png" width="180" alt="terminal">
+  <img src="docs/screenshots/2026-11-28-calls.png" width="180" alt="Calls">
+  <img src="docs/screenshots/2026-11-28-chats.png" width="180" alt="Chats">
+</p>
+
+Screenshots from the Mi A2, in date order, are in [docs/screenshots/](docs/screenshots/).
 
 | Device | Codename | Kernel | Status |
 |---|---|---|---|

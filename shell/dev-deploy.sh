@@ -4,7 +4,7 @@
 set -e
 H=${1:-phone@172.16.42.1}
 cd "$(dirname "$0")"
-tar -cf - CMakeLists.txt src qml tests 2>/dev/null | ssh "$H" 'rm -rf ~/revive-shell-src && mkdir -p ~/revive-shell-src && tar -xf - -C ~/revive-shell-src'
+tar -cf - CMakeLists.txt src qml tests protocols icons 2>/dev/null | ssh "$H" 'rm -rf ~/revive-shell-src && mkdir -p ~/revive-shell-src && tar -xf - -C ~/revive-shell-src'
 ssh -t "$H" 'set -e; cd ~/revive-shell-src
   cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo >/dev/null
   cmake --build build -j"$(nproc)"
