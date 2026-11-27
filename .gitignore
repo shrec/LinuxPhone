@@ -1,3 +1,11 @@
 out/
 *.stackdump
 .claude/
+# Local AI-tooling state (AIWorkHub, editor), not part of revive
+.aiworkhub/
+.github/copilot-instructions.md
+.mcp.json
+.scratch/
+.vscode/
+AGENTS.md
+CLAUDE.md
