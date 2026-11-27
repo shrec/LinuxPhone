@@ -50,7 +50,7 @@ into a modern touch UI.
 - `QWaylandCompositor` with xdg-shell (one output, the panel), `linux-dmabuf-unstable-v1` for GPU
   buffers with a shm fallback, and text-input for the on-screen keyboard.
 - Output scale comes from the device: a new `SCALE` in `device.conf`. The Mi A2 is 1080×2160 at about
-  400 dpi, so scale 2.5 gives a 432×864 logical screen.
+  400 dpi, so scale 3 gives a 360×720 logical screen (`wl_output` scale is an integer).
 - Touch: libinput through eglfs. Edge swipes are claimed by the shell, and everything else goes to the
   focused app.
 

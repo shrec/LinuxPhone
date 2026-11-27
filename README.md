@@ -11,7 +11,7 @@ keyboard, and you can SSH in over USB. The graphical UI comes next.
 
 | Device | Codename | Kernel | Status |
 |---|---|---|---|
-| Xiaomi Mi A2 | `xiaomi-jasmine` | [sdm660-mainline](https://github.com/sdm660-mainline/linux) 7.2 | stage 1 done: display, touch, on-screen keyboard, USB network + SSH (tested on Windows 11), ~240 MB RAM idle · Wi-Fi (iwd) |
+| Xiaomi Mi A2 | `xiaomi-jasmine` | [sdm660-mainline](https://github.com/sdm660-mainline/linux) 7.2 | stage 1 done: display, touch, on-screen keyboard, USB network + SSH (tested on Windows 11), ~240 MB RAM idle · Wi-Fi (iwd) · shell 3a: launcher + apps |
 
 ## Build
 
@@ -60,6 +60,8 @@ Later builds reuse the `linuxphone-work` Docker volume.
 
 If SSH doesn't connect, run `usbinfo` on the phone. It shows the USB link state.
 
+The phone boots into revive-shell. Swipe up from the bottom edge to go home. If the shell keeps crashing, tty1 falls back to the text console.
+
 The default login is `phone` / `1234`. **Change it** with `passwd`. Each phone generates its own SSH host
 keys on first boot.
 
@@ -68,6 +70,7 @@ keys on first boot.
 ```
 build.sh                 builds kernel, rootfs, initramfs and images for one device
 Dockerfile               the build environment
+shell/                   revive-shell (Qt Wayland compositor + QML UI); ./shell/dev-deploy.sh builds it on a phone
 devices/<codename>/      everything device-specific (see CONTRIBUTING.md)
 rootfs/                  files copied into every device's rootfs
 ```
