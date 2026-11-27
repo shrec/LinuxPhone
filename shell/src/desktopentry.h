@@ -23,4 +23,8 @@ std::optional<AppEntry> parse(const QString &text, const QString &id, const QStr
 QList<AppEntry> scan(const QStringList &dirs, const QString &locale);
 // Exec= as argv: quoting resolved, field codes (%f %U ...) removed, %% -> %.
 QStringList commandLine(const QString &exec);
+// Arguments for `systemd-run`: the app runs in its own user scope unit; Terminal=true apps run in foot.
+QStringList systemdRunArgs(const AppEntry &e, const QString &unitSuffix);
+// Whether a Wayland toplevel's app_id belongs to this entry (id or StartupWMClass, case-insensitive).
+bool matchesAppId(const AppEntry &e, const QString &appId);
 }

@@ -77,6 +77,32 @@ private slots:
         QCOMPARE(apps[0].name, QString("alpha"));
         QCOMPARE(apps[1].name, QString("Bravo"));
     }
+    void systemdRunArgs() {
+        AppEntry foot{"foot", "Foot", "foot", "foot", "", false};
+        QCOMPARE(DesktopEntry::systemdRunArgs(foot, "1a2b"),
+                 (QStringList{"--user", "--scope", "--collect", "--unit=app-revive-foot-1a2b", "--", "foot"}));
+    }
+    void terminalAppsRunInFoot() {
+        AppEntry btop{"btop", "btop++", "btop", "btop --utf-force", "", true};
+        QCOMPARE(DesktopEntry::systemdRunArgs(btop, "9"),
+                 (QStringList{"--user", "--scope", "--collect", "--unit=app-revive-btop-9", "--",
+                              "foot", "--", "btop", "--utf-force"}));
+    }
+    void unitNameIsSanitized() {
+        AppEntry odd{"my app+x@1", "Odd", "", "odd", "", false};
+        QCOMPARE(DesktopEntry::systemdRunArgs(odd, "7").at(3), QString("--unit=app-revive-my_app_x_1-7"));
+    }
+    void matchesAppId() {
+        AppEntry calc{"org.gnome.Calculator", "Calculator", "", "gnome-calculator", "", false};
+        AppEntry ff{"firefox-esr", "Firefox", "", "firefox-esr", "firefox-esr", false};
+        AppEntry klass{"telegram", "Telegram", "", "telegram-desktop", "TelegramDesktop", false};
+        QVERIFY(DesktopEntry::matchesAppId(calc, "org.gnome.Calculator"));
+        QVERIFY(DesktopEntry::matchesAppId(calc, "ORG.GNOME.CALCULATOR"));
+        QVERIFY(DesktopEntry::matchesAppId(ff, "firefox-esr"));
+        QVERIFY(DesktopEntry::matchesAppId(klass, "telegramdesktop"));
+        QVERIFY(!DesktopEntry::matchesAppId(calc, ""));
+        QVERIFY(!DesktopEntry::matchesAppId(calc, "foot"));
+    }
 };
 
 QTEST_MAIN(TstDesktopEntry)

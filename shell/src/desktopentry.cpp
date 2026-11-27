@@ -93,3 +93,26 @@ QStringList DesktopEntry::commandLine(const QString &exec)
     if (started || !cur.isEmpty()) args << cur;
     return args;
 }
+
+QStringList DesktopEntry::systemdRunArgs(const AppEntry &e, const QString &unitSuffix)
+{
+    QString safe = e.id;
+    for (QChar &c : safe)  // systemd unit names allow [A-Za-z0-9:_.-]
+        if (!(c.isLetterOrNumber() && c.unicode() < 128) && c != QLatin1Char(':') && c != QLatin1Char('_')
+            && c != QLatin1Char('.') && c != QLatin1Char('-'))
+            c = QLatin1Char('_');
+    QStringList argv = commandLine(e.exec);
+    if (e.terminal)
+        argv = QStringList{QStringLiteral("foot"), QStringLiteral("--")} + argv;
+    return QStringList{QStringLiteral("--user"), QStringLiteral("--scope"), QStringLiteral("--collect"),
+                       QStringLiteral("--unit=app-revive-%1-%2").arg(safe, unitSuffix), QStringLiteral("--")}
+           + argv;
+}
+
+bool DesktopEntry::matchesAppId(const AppEntry &e, const QString &appId)
+{
+    if (appId.isEmpty())
+        return false;
+    return appId.compare(e.id, Qt::CaseInsensitive) == 0
+           || (!e.wmClass.isEmpty() && appId.compare(e.wmClass, Qt::CaseInsensitive) == 0);
+}
