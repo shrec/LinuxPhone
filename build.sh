@@ -40,14 +40,15 @@ echo "== rootfs (Debian forky arm64)"
 # ponytail: forky (testing) because buffyboard isn't in trixie; move to stable once it lands there.
 R=$W/rootfs; D=$SRC/devices/$DEVICE; rm -rf "$R"
 # Files: the OS-wide overlay, then the device's own (devices/<name>/rootfs) on top.
-mmdebstrap --mode=root --arch=arm64 --variant=minbase \
-  --include=systemd-sysv,udev,dbus,kmod,iproute2,openssh-server,sudo,kbd,nano,less,busybox-static,buffyboard,iwd,wireless-regdb,systemd-resolved${PACKAGES:+,$PACKAGES} \
+mmdebstrap --mode=root --arch=arm64 --variant=minbase --components=main,non-free-firmware \
+  --include=systemd-sysv,udev,dbus,kmod,iproute2,openssh-server,sudo,kbd,nano,less,busybox-static,buffyboard,iwd,wireless-regdb,systemd-resolved,systemd-timesyncd,dbus-user-session,foot,fonts-jetbrains-mono,hicolor-icon-theme,libgl1-mesa-dri,libegl1,qt6-qpa-plugins,qt6-wayland,qml6-module-qtquick,qml6-module-qtquick-window,qml6-module-qtwayland-compositor${PACKAGES:+,$PACKAGES} \
   --customize-hook="for o in $SRC/rootfs $D/rootfs; do [ ! -d \$o ] || cp -r --no-preserve=mode,ownership \$o/. \"\$1\"/; done; chmod 755 \"\$1\"/usr/local/*bin/*" \
   --customize-hook='printf "revive (built %s) \\\\l\\n\\n" "$(date -u "+%F %H:%M UTC")" > "$1/etc/issue"' \
   --customize-hook="chroot \"\$1\" sh -ec '
       useradd -m -s /bin/bash -G sudo phone; echo phone:1234 | chpasswd
       rm -f /etc/ssh/ssh_host_*
-      systemctl enable systemd-networkd systemd-resolved iwd usb-gadget buffyboard ssh ${SERVICES:-}'" \
+      systemctl enable systemd-networkd systemd-resolved iwd usb-gadget revive-shell ssh ${SERVICES:-}
+      systemctl disable getty@tty1'" \
   forky "$R" http://deb.debian.org/debian
 "${KMAKE[@]}" modules_install INSTALL_MOD_PATH="$R/usr" INSTALL_MOD_STRIP=1
 
@@ -55,8 +56,37 @@ mmdebstrap --mode=root --arch=arm64 --variant=minbase \
 if [ -n "${FIRMWARE_URL:-}" ]; then
   curl -fsSL "$FIRMWARE_URL" -o "$W/firmware.tar.gz"
   echo "$FIRMWARE_SHA512  $W/firmware.tar.gz" | sha512sum -c --quiet -
-  tar -xzif "$W/firmware.tar.gz" -C "$R" --no-same-owner --wildcards 'usr/lib/firmware/*' 2>/dev/null
+  tar -xzif "$W/firmware.tar.gz" -C "$R" --no-same-owner --wildcards 'usr/lib/firmware/*' \
+    --transform 's,^usr/lib/firmware/postmarketos/,usr/lib/firmware/,' 2>/dev/null
 fi
+# Single files out of large firmware .debs (FIRMWARE_FROM_DEB="pkg:file,file ...").
+for spec in ${FIRMWARE_FROM_DEB:-}; do
+  pkg=${spec%%:*}
+  (cd "$W" && rm -rf fwx "${pkg}"_*.deb && apt-get download -q "$pkg" && dpkg-deb -x "${pkg}"_*.deb fwx)
+  for f in $(echo "${spec#*:}" | tr ',' ' '); do install -D -m 644 "$W/fwx/$f" "$R/$f"; done
+done
+
+echo "== revive-shell"
+B=/work/sdk-forky
+# Built under a temporary name and renamed only when complete, so an interrupted first build
+# never leaves a broken cached chroot for later builds to reuse.
+if [ ! -d "$B" ]; then
+  rm -rf "$B.tmp"
+  mmdebstrap --mode=root --arch=arm64 --variant=apt \
+    --include=build-essential,cmake,qt6-base-dev,qt6-declarative-dev forky "$B.tmp" http://deb.debian.org/debian
+  mv "$B.tmp" "$B"
+fi
+cp /etc/resolv.conf "$B/etc/resolv.conf"
+mount -t proc proc "$B/proc"; trap 'umount "$B/proc" 2>/dev/null || true' EXIT
+chroot "$B" sh -ec 'apt-get -q update && apt-get -qy dist-upgrade >/dev/null'  # same Qt as the rootfs
+rm -rf "$B/src" "$B/out"; cp -r "$SRC/shell" "$B/src"
+chroot "$B" sh -ec 'cmake -S /src -B /src/build -DCMAKE_BUILD_TYPE=Release >/dev/null
+  cmake --build /src/build -j"$(nproc)"
+  ctest --test-dir /src/build --output-on-failure
+  DESTDIR=/out cmake --install /src/build --prefix /usr'
+umount "$B/proc"; trap - EXIT
+cp -a "$B/out/." "$R/"
+mkdir -p "$R/etc/revive"; echo "REVIVE_SCALE=${SCALE:-1}" > "$R/etc/revive/shell.env"
 
 echo "== initramfs"
 # Mounts the rootfs by filesystem label, ignoring the root= the Android bootloader appends.
