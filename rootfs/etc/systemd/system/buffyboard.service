@@ -1,0 +1,10 @@
+[Unit]
+Description=On-screen keyboard for the text console
+
+[Service]
+ExecStart=/usr/bin/buffyboard
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

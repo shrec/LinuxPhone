@@ -1,0 +1,3 @@
+# The msm display driver replaces the bootloader framebuffer during boot; restart the
+# on-screen keyboard so it draws on the framebuffer that is actually shown.
+SUBSYSTEM=="graphics", KERNEL=="fb0", ACTION=="add", RUN+="/usr/bin/systemctl --no-block restart buffyboard.service"

@@ -1,0 +1,30 @@
+#!/bin/sh
+# Expose a USB network interface (usb0) to the computer.
+# ponytail: RNDIS only — Windows and Linux bind it out of the box; add an NCM config when macOS matters.
+set -e
+G=/sys/kernel/config/usb_gadget/g1
+[ -e "$G/UDC" ] && [ -n "$(cat "$G/UDC")" ] && exit 0
+
+for i in $(seq 50); do [ -n "$(ls /sys/class/udc 2>/dev/null)" ] && break; sleep 0.2; done
+
+mkdir -p "$G/strings/0x409" "$G/functions/rndis.usb0" "$G/configs/c.1"
+echo 0x1d6b > "$G/idVendor"   # Linux Foundation
+echo 0x0104 > "$G/idProduct"  # Multifunction Composite Gadget
+echo 0x0101 > "$G/bcdDevice"  # bump when descriptors change: Windows caches them per VID/PID/bcdDevice
+# Miscellaneous/IAD device class: Windows' composite driver fails (Code 10) without it.
+echo 0xEF > "$G/bDeviceClass"
+echo 0x02 > "$G/bDeviceSubClass"
+echo 0x01 > "$G/bDeviceProtocol"
+echo revive > "$G/strings/0x409/manufacturer"
+cat /etc/hostname > "$G/strings/0x409/product"
+
+# Microsoft OS descriptor: makes Windows load its built-in RNDIS driver without an .inf.
+echo 1       > "$G/os_desc/use"
+echo 0xcd    > "$G/os_desc/b_vendor_code"
+echo MSFT100 > "$G/os_desc/qw_sign"
+echo RNDIS   > "$G/functions/rndis.usb0/os_desc/interface.rndis/compatible_id"
+echo 5162001 > "$G/functions/rndis.usb0/os_desc/interface.rndis/sub_compatible_id"
+
+ln -sf "$G/functions/rndis.usb0" "$G/configs/c.1/"
+ln -sf "$G/configs/c.1" "$G/os_desc/"
+ls /sys/class/udc | head -n1 > "$G/UDC"
