@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(revive-shell LANGUAGES CXX)
+project(revive-shell LANGUAGES C CXX)  # C: wayland-scanner's generated protocol code
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Qml Quick Test)
@@ -16,13 +16,19 @@ target_link_libraries(tst_desktopentry PRIVATE revive_core Qt6::Test)
 add_test(NAME desktopentry COMMAND tst_desktopentry)
 
 if(UNIX AND NOT APPLE)
-qt_add_executable(revive-shell src/main.cpp src/appmodel.cpp src/appmodel.h src/iconprovider.h)
+find_package(Qt6 REQUIRED COMPONENTS WaylandClient)
+qt_add_executable(revive-shell src/main.cpp src/appmodel.cpp src/appmodel.h src/iconprovider.h
+    src/toplevelmodel.cpp src/toplevelmodel.h)
 set_source_files_properties(qml/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 qt_add_qml_module(revive-shell
     URI Revive.Shell
     VERSION 1.0
     QML_FILES qml/Main.qml qml/Theme.qml qml/StatusBar.qml qml/Launcher.qml)
-target_link_libraries(revive-shell PRIVATE revive_core Qt6::Gui Qt6::Qml Qt6::Quick)
+# zwlr_foreign_toplevel_management_v1 client code, generated at build time.
+qt6_generate_wayland_protocol_client_sources(revive-shell FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/protocols/wlr-foreign-toplevel-management-unstable-v1.xml)
+target_include_directories(revive-shell PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(revive-shell PRIVATE revive_core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::WaylandClient)
 install(TARGETS revive-shell RUNTIME DESTINATION bin)
 endif()
 
