@@ -18,3 +18,16 @@
   `device.conf`). Without it the modem crashes before ModemManager can talk to it.
 - **Measured** on the Mi A2 on 2026-11-28: no modem crashes, firmware MPSS.AT.3.1, ModemManager
   state `failed: sim-missing` because no SIM was inserted.
+
+## 0002-ipa-v2-skip-modem-exception-reset.patch
+
+- **Source:** ours, on top of 0001.
+- **Fixes:** every modem stop hung forever, so `systemctl reboot` never finished (sshd gone,
+  screen black, kernel still answering ping). On a modem stop the IPA driver resets the modem
+  endpoints through the command channel. On v2.6L that channel faults in the SMMU and the
+  pipeline-clear tag never arrives. `ipa_cmd_pipeline_clear_wait()` waits without a timeout,
+  and rmtfs (which stops the modem on SIGTERM) sat in D state with it.
+- **Change:** skip that reset on IPA v2.x, like 0001 already skips `modem_pause_all`.
+- **Measured** on the Mi A2 on 2026-11-28: `systemctl stop rmtfs` stops the modem in 1 s
+  (was: never), the modem and Wi-Fi come back on `systemctl start rmtfs`, and
+  `systemctl reboot --reboot-argument=bootloader` lands in fastboot (systemd shutdown 2.6 s).

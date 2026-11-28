@@ -1,0 +1,19 @@
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index 29e865c..b291257 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -609,6 +609,14 @@ int ipa_endpoint_modem_exception_reset_all(struct ipa *ipa)
+ 	u32 value_mask = ~0;
+ 	u32 count;
+ 
++	/* On IPA v2.x the command channel faults in the SMMU once the modem
++	 * is stopping, so the pipeline-clear tag never arrives and
++	 * ipa_cmd_pipeline_clear_wait() blocks forever.  That wedged every
++	 * modem stop (reboot, rmtfs exit).  Skip the reset there.
++	 */
++	if (ipa->version <= IPA_VERSION_2_6L)
++		return 0;
++
+ 	/* We need one command per modem TX endpoint, plus the commands
+ 	 * that clear the pipeline.
+ 	 */
