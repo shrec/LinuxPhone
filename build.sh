@@ -18,12 +18,21 @@ if [ ! -f /.dockerenv ]; then
 fi
 
 . "$SRC/devices/$DEVICE/device.conf"
-W=/work/$DEVICE; OUT=$SRC/out/$DEVICE; K=/work/linux-$KERNEL_TAG
+W=/work/$DEVICE; OUT=$SRC/out/$DEVICE; K=/work/linux-$KERNEL_TAG; D=$SRC/devices/$DEVICE
 mkdir -p "$W" "$OUT"
 KMAKE=(make -C "$K" O="$W/kbuild" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j"$(nproc)")
 
 echo "== kernel $KERNEL_TAG"
 [ -d "$K" ] || git clone --depth 1 --branch "$KERNEL_TAG" "$KERNEL_REPO" "$K"
+# The tree under /work is cached between builds: restore it to the tag, then apply the device's
+# kernel patches (devices/<name>/patches/*.patch) in name order. A patch that fails stops the build.
+git -C "$K" reset -q --hard "$KERNEL_TAG"
+git -C "$K" clean -qfd -- arch/arm64/boot/dts drivers include Documentation
+for p in "$D"/patches/*.patch; do
+  [ -e "$p" ] || continue
+  git -C "$K" apply --whitespace=nowarn "$p"
+  echo "applied $(basename "$p")"
+done
 # Boot logo: assets/logo.svg becomes the kernel's 224-colour framebuffer logo.
 rsvg-convert "$SRC/assets/logo.svg" | pngtopnm | pnmquant 224 2>/dev/null | pamtopnm -plain \
   > "$K/drivers/video/logo/logo_linux_clut224.ppm"
@@ -38,7 +47,7 @@ done
 
 echo "== rootfs (Debian forky arm64)"
 # ponytail: forky (testing) because buffyboard isn't in trixie; move to stable once it lands there.
-R=$W/rootfs; D=$SRC/devices/$DEVICE; rm -rf "$R"
+R=$W/rootfs; rm -rf "$R"
 # Files: the OS-wide overlay, then the device's own (devices/<name>/rootfs) on top.
 mmdebstrap --mode=root --arch=arm64 --variant=minbase --components=main,non-free-firmware \
   --include=systemd-sysv,udev,dbus,kmod,iproute2,openssh-server,sudo,kbd,nano,less,busybox-static,buffyboard,iwd,wireless-regdb,systemd-resolved,systemd-timesyncd,dbus-user-session,foot,fonts-jetbrains-mono,hicolor-icon-theme,libgl1-mesa-dri,libegl1,qt6-qpa-plugins,qt6-wayland,qml6-module-qtquick,qml6-module-qtquick-window,phoc,layer-shell-qt,qml6-module-org-kde-layershell,qt6-svg-plugins,modemmanager,gnome-calls,chatty,gnome-contacts,phosh-osk-stevia,libglib2.0-bin${PACKAGES:+,$PACKAGES} \

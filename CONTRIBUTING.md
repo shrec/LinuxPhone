@@ -22,6 +22,7 @@ A phone is one folder: `devices/<vendor>-<codename>/`. Nothing outside it should
    (storage controller, its clocks, ext4) must be `=y`, because the initramfs carries no modules.
    `build.sh` fails if an option doesn't stick.
 4. Build with `./build.sh <your-device>`, test with `fastboot boot`, then add a row to the table in README.md.
+5. **Kernel patches (optional):** if the kernel needs changes that aren't upstream, put them in `devices/<name>/patches/*.patch`. `build.sh` applies them in name order with `git apply` to a clean `KERNEL_TAG` checkout and fails if one doesn't apply. Document each patch's source and status in `patches/README.md`.
 
 ## Changes to the OS itself
 
