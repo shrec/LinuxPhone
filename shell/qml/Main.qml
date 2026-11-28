@@ -16,6 +16,9 @@ QtObject {
         height: 28
         color: Theme.panel
         LayerShell.Window.layer: LayerShell.Window.LayerTop
+        // The shell never takes text. With layer-shell-qt's default (on-demand) a shell surface keeps
+        // the keyboard focus, so app windows (foot) never receive wl_keyboard.enter.
+        LayerShell.Window.keyboardInteractivity: LayerShell.Window.KeyboardInteractivityNone
         LayerShell.Window.anchors: LayerShell.Window.AnchorTop | LayerShell.Window.AnchorLeft | LayerShell.Window.AnchorRight
         LayerShell.Window.exclusionZone: 28
         visible: true
@@ -27,6 +30,7 @@ QtObject {
     property Window launcherWindow: Window {
         color: Theme.background
         LayerShell.Window.layer: LayerShell.Window.LayerTop
+        LayerShell.Window.keyboardInteractivity: LayerShell.Window.KeyboardInteractivityNone
         LayerShell.Window.anchors: LayerShell.Window.AnchorTop | LayerShell.Window.AnchorBottom | LayerShell.Window.AnchorLeft | LayerShell.Window.AnchorRight
         visible: root.home
 
@@ -44,6 +48,7 @@ QtObject {
         height: 28
         color: "transparent"
         LayerShell.Window.layer: LayerShell.Window.LayerOverlay
+        LayerShell.Window.keyboardInteractivity: LayerShell.Window.KeyboardInteractivityNone
         LayerShell.Window.anchors: LayerShell.Window.AnchorBottom | LayerShell.Window.AnchorLeft | LayerShell.Window.AnchorRight
         LayerShell.Window.exclusionZone: 28  // app windows end above the strip
         visible: true

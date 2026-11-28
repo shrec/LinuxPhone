@@ -41,12 +41,13 @@ echo "== rootfs (Debian forky arm64)"
 R=$W/rootfs; D=$SRC/devices/$DEVICE; rm -rf "$R"
 # Files: the OS-wide overlay, then the device's own (devices/<name>/rootfs) on top.
 mmdebstrap --mode=root --arch=arm64 --variant=minbase --components=main,non-free-firmware \
-  --include=systemd-sysv,udev,dbus,kmod,iproute2,openssh-server,sudo,kbd,nano,less,busybox-static,buffyboard,iwd,wireless-regdb,systemd-resolved,systemd-timesyncd,dbus-user-session,foot,fonts-jetbrains-mono,hicolor-icon-theme,libgl1-mesa-dri,libegl1,qt6-qpa-plugins,qt6-wayland,qml6-module-qtquick,qml6-module-qtquick-window,phoc,layer-shell-qt,qml6-module-org-kde-layershell,qt6-svg-plugins,modemmanager,gnome-calls,chatty,gnome-contacts${PACKAGES:+,$PACKAGES} \
+  --include=systemd-sysv,udev,dbus,kmod,iproute2,openssh-server,sudo,kbd,nano,less,busybox-static,buffyboard,iwd,wireless-regdb,systemd-resolved,systemd-timesyncd,dbus-user-session,foot,fonts-jetbrains-mono,hicolor-icon-theme,libgl1-mesa-dri,libegl1,qt6-qpa-plugins,qt6-wayland,qml6-module-qtquick,qml6-module-qtquick-window,phoc,layer-shell-qt,qml6-module-org-kde-layershell,qt6-svg-plugins,modemmanager,gnome-calls,chatty,gnome-contacts,squeekboard,libglib2.0-bin${PACKAGES:+,$PACKAGES} \
   --customize-hook="for o in $SRC/rootfs $D/rootfs; do [ ! -d \$o ] || cp -r --no-preserve=mode,ownership \$o/. \"\$1\"/; done; chmod 755 \"\$1\"/usr/local/*bin/*" \
   --customize-hook='printf "revive (built %s) \\\\l\\n\\n" "$(date -u "+%F %H:%M UTC")" > "$1/etc/issue"' \
   --customize-hook="chroot \"\$1\" sh -ec '
       useradd -m -s /bin/bash -G sudo phone; echo phone:1234 | chpasswd
       rm -f /etc/ssh/ssh_host_*
+      glib-compile-schemas /usr/share/glib-2.0/schemas
       systemctl enable systemd-networkd systemd-resolved iwd usb-gadget revive-shell ssh ModemManager ${SERVICES:-}
       systemctl disable getty@tty1'" \
   forky "$R" http://deb.debian.org/debian
