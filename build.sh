@@ -45,7 +45,7 @@ mmdebstrap --mode=root --arch=arm64 --variant=minbase --components=main,non-free
   --customize-hook="for o in $SRC/rootfs $D/rootfs; do [ ! -d \$o ] || cp -r --no-preserve=mode,ownership \$o/. \"\$1\"/; done; chmod 755 \"\$1\"/usr/local/*bin/*" \
   --customize-hook='printf "revive (built %s) \\\\l\\n\\n" "$(date -u "+%F %H:%M UTC")" > "$1/etc/issue"' \
   --customize-hook="chroot \"\$1\" sh -ec '
-      useradd -m -s /bin/bash -G sudo phone; echo phone:1234 | chpasswd
+      useradd -m -s /bin/bash -G sudo,netdev phone; echo phone:1234 | chpasswd
       rm -f /etc/ssh/ssh_host_*
       glib-compile-schemas /usr/share/glib-2.0/schemas
       systemctl enable systemd-networkd systemd-resolved iwd usb-gadget revive-shell ssh ModemManager ${SERVICES:-}

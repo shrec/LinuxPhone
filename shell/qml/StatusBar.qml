@@ -8,6 +8,26 @@ Rectangle {
     property string now: Qt.formatTime(new Date(), "hh:mm")
     Timer { interval: 1000; running: true; repeat: true; onTriggered: bar.now = Qt.formatTime(new Date(), "hh:mm") }
 
+    // Tap toggles the quick settings shade. A downward drag pulls it down with the finger: the touch
+    // stays on this window while the finger moves over the screen, so the drag is reported as a
+    // total dy (px) plus the release velocity (px/s).
+    signal toggleRequested()
+    signal dragStarted()
+    signal dragMoved(real dy)
+    signal dragFinished(real dy, real vy)
+    TapHandler { onTapped: bar.toggleRequested() }
+    DragHandler {
+        target: null  // detect the gesture only; don't move the bar
+        xAxis.enabled: false
+        yAxis.enabled: true
+        // activeTranslation is reset when `active` turns false, so keep the last values while active.
+        property real lastDy: 0
+        property real lastVy: 0
+        onActiveTranslationChanged: if (active) { lastDy = activeTranslation.y; bar.dragMoved(lastDy) }
+        onCentroidChanged: if (active) lastVy = centroid.velocity.y
+        onActiveChanged: if (active) { lastDy = 0; lastVy = 0; bar.dragStarted() } else bar.dragFinished(lastDy, lastVy)
+    }
+
     Text {
         anchors { left: parent.left; leftMargin: 12; verticalCenter: parent.verticalCenter }
         text: "revive"; color: Theme.accent
@@ -19,26 +39,15 @@ Rectangle {
         anchors { right: clock.left; rightMargin: 12; verticalCenter: parent.verticalCenter }
         spacing: 10
 
-        // Wi-Fi: four bars of rising height; a dim "x" when not connected.
+        // Wi-Fi: dot and arcs fan; a dim "x" when not connected.
         Row {
             anchors.verticalCenter: parent.verticalCenter
             spacing: 4
-            Row {
+            WifiIcon {
                 id: wifi
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: 2
-                height: 12
-                Repeater {
-                    model: 4
-                    Rectangle {
-                        required property int index
-                        width: 3
-                        height: 3 + index * 3
-                        anchors.bottom: parent.bottom
-                        color: StatusModel.wifiConnected && index < StatusModel.wifiBars ? Theme.accent : Theme.dim
-                        opacity: StatusModel.wifiConnected && index < StatusModel.wifiBars ? 1.0 : 0.3
-                    }
-                }
+                bars: StatusModel.wifiBars
+                active: StatusModel.wifiConnected
             }
             Text {
                 visible: !StatusModel.wifiConnected

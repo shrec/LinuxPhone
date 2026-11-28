@@ -10,6 +10,52 @@ QtObject {
     // and layer-shell-qt does not apply a layer change to a mapped surface, so the launcher lives
     // in the top layer and is mapped only while home.
     property bool home: true
+    // Quick settings shade: progress 0 (hidden) .. 1 (open). It follows the finger while dragged and
+    // settles with an animation on release.
+    property real shade: 0
+    property bool shadeOpen: false       // the state the shade is heading to / resting in
+    property bool shadeDragging: false
+    property real shadeBase: 0           // progress when the current drag started
+    readonly property bool shadeMapped: shade > 0 || shadeDragging || shadeAnim.running
+    readonly property real openThreshold: 0.35
+    readonly property real flickSpeed: 800  // px/s
+
+    property Animation shadeAnim: NumberAnimation {
+        target: root
+        property: "shade"
+        duration: 180
+        easing.type: Easing.OutCubic
+    }
+
+    function dragShadeStart() {
+        shadeAnim.stop()
+        shadeBase = shade
+        shadeDragging = true
+    }
+
+    function dragShadeMove(dy) {
+        shade = Math.max(0, Math.min(1, shadeBase + dy / Math.max(1, quickSettings.panelHeight)))
+    }
+
+    // Release: a fast flick decides by its direction, otherwise the progress does.
+    function dragShadeEnd(dy, vy) {
+        dragShadeMove(dy)
+        shadeDragging = false
+        if (vy > flickSpeed)
+            settleShade(true)
+        else if (vy < -flickSpeed)
+            settleShade(false)
+        else
+            settleShade(shade > openThreshold)
+    }
+
+    function settleShade(open) {
+        shadeOpen = open
+        shadeAnim.stop()
+        shadeAnim.from = shade
+        shadeAnim.to = open ? 1 : 0
+        shadeAnim.restart()
+    }
 
     // Top bar: layer top, anchored top, reserves 28 px.
     property Window statusWindow: Window {
@@ -23,7 +69,13 @@ QtObject {
         LayerShell.Window.exclusionZone: 28
         visible: true
 
-        StatusBar { anchors.fill: parent }
+        StatusBar {
+            anchors.fill: parent
+            onToggleRequested: root.settleShade(!root.shadeOpen)
+            onDragStarted: root.dragShadeStart()
+            onDragMoved: (dy) => root.dragShadeMove(dy)
+            onDragFinished: (dy, vy) => root.dragShadeEnd(dy, vy)
+        }
     }
 
     // App grid: full screen, above the apps, shown only while home.
@@ -66,6 +118,29 @@ QtObject {
             property real lastDy: 0
             onActiveTranslationChanged: lastDy = activeTranslation.y
             onActiveChanged: if (!active && lastDy < -60) root.home = true
+        }
+    }
+
+    // Quick settings shade: a full-screen overlay below the bar, mapped while it is dragged, animating
+    // or open. The only shell window that takes the keyboard (on demand), so the on-screen keyboard can
+    // type a Wi-Fi passphrase.
+    property Window quickWindow: Window {
+        color: "transparent"
+        LayerShell.Window.layer: LayerShell.Window.LayerOverlay
+        LayerShell.Window.keyboardInteractivity: LayerShell.Window.KeyboardInteractivityOnDemand
+        LayerShell.Window.anchors: LayerShell.Window.AnchorTop | LayerShell.Window.AnchorBottom | LayerShell.Window.AnchorLeft | LayerShell.Window.AnchorRight
+        LayerShell.Window.margins.top: 28  // the status bar stays visible
+        visible: root.shadeMapped
+
+        QuickSettings {
+            id: quickSettings
+            anchors.fill: parent
+            progress: root.shade
+            open: root.shadeMapped
+            onCloseRequested: root.settleShade(false)
+            onDragStarted: root.dragShadeStart()
+            onDragMoved: (dy) => root.dragShadeMove(dy)
+            onDragFinished: (dy, vy) => root.dragShadeEnd(dy, vy)
         }
     }
 
