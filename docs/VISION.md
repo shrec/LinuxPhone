@@ -1,9 +1,47 @@
 # revive: vision
 
-A light, private, general-purpose computing platform for phones and tablets that the user fully
-controls.
+A universal, light Linux platform for ARM devices (phones, tablets, single-board computers, embedded
+boards) whose purpose the user decides. Like the Raspberry Pi, revive provides the computing
+platform, and people find uses for it that nobody planned. The world already holds a huge number of
+ARM devices whose computing power goes unused. revive does not make new hardware; it gives existing
+hardware a second life. It does not need to take market share from Android to succeed.
+
 revive is built on mainline Linux and Debian, so the OS infrastructure and most applications already
-exist. The work is organizing them for mobile devices.
+exist. The work is organizing them for these devices.
+
+## Layers
+
+```
+ phone  ·  tablet  ·  ARM SBC  ·  embedded board
+ ───────────────────────────────────────────────────────────────
+ Device layer      device tree · drivers · firmware · device profile (devices/<codename>/)
+ revive core       Linux kernel · minimal rootfs · security · networking
+ Interfaces        mobile shell · desktop shell · headless · custom apps
+ Ecosystem         App Market · SDK · package manager
+```
+
+## What people can build on it
+
+- A home automation panel from an old phone.
+- A pocket computer with a full Linux environment.
+- A 3D printer controller: camera, network, touch control.
+- A car terminal: telemetry, diagnostics, navigation.
+- Video surveillance with a local video server and no cloud service.
+- An industrial terminal for machine monitoring and control (Rockchip tablets with Ethernet).
+
+## Rules from the start
+
+- **Minimal core.** Even the graphical environment is an optional component; headless is a first-class mode.
+- **Modular hardware support.** Adding a device never changes the core architecture.
+- **Privacy by design.** No mandatory account, telemetry or cloud dependency.
+- **Open SDK.** Developers can write their own interface, driver or application.
+- **Reproducible builds.** Anyone can build the system themselves (`./build.sh <device>`).
+- **Atomic updates and rollback.** A failed update never bricks the device.
+- **Community device repository.** The community adds support for new devices.
+
+"Universal" means one shared OS and a standard way to add a device, not a promise that any ARM phone
+boots. The hard parts are the phones' non-standard hardware: locked bootloaders, closed GPU and modem
+firmware, device-specific camera drivers, power and sleep management, and vendor-modified kernels.
 
 ## Principles
 
@@ -65,4 +103,6 @@ outside servers.
 | App Market, permissions, per-app firewall, sandboxing | later |
 | Desktop convergence | later, on phones with video out |
 | More devices, porting pipeline | after the Mi A2 is complete |
+| Headless mode, SBC and embedded targets | after the Mi A2; the industrial Rockchip tablets are the first candidates |
+| Atomic updates with rollback | not started |
 | Android tablets | same device profiles; the shell needs a tablet layout (landscape, larger scale) |
