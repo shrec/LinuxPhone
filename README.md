@@ -60,6 +60,24 @@ Later builds reuse the `linuxphone-work` Docker volume.
    fastboot reboot
    ```
 
+### Updating
+
+Once revive runs on the phone, update it with no button presses. Connect it over USB and run:
+
+```sh
+./flash.sh xiaomi-jasmine
+```
+
+The script reboots the phone into fastboot over SSH (`phone@172.16.42.1`, sudo asks for the phone's
+password), flashes boot and userdata, then boots the new kernel with `fastboot boot`. Use `--host user@ip`
+for another address.
+
+- `--boot-only` test-boots `boot.img` and writes nothing.
+- `--no-userdata` keeps the phone's data and only updates the kernel.
+
+If the phone does not answer SSH, the script asks you to hold Power + Volume Down and keeps waiting.
+vbmeta is flashed once at install and is not touched here.
+
 ## Use
 
 - **On the phone:** log in on the console with the on-screen keyboard.
