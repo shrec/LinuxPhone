@@ -5,9 +5,25 @@ Item {
     id: root
     signal launch(string appId)
 
+    HomeClock {
+        id: clock
+        anchors { top: parent.top; left: parent.left; right: parent.right }
+    }
+
+    // Dock taps reuse the grid's launch signal, so Main's activate-or-launch path serves both.
+    Dock {
+        id: dock
+        z: 1  // its toast rises over the grid's bottom rows
+        anchors { left: parent.left; right: parent.right; bottom: parent.bottom
+                  leftMargin: 12; rightMargin: 12; bottomMargin: 36 }  // 28 px HomeStrip + 8
+        onLaunch: (appId) => root.launch(appId)
+    }
+
     GridView {
         id: grid
-        anchors { fill: parent; margins: 12 }
+        anchors { top: clock.bottom; bottom: dock.top; left: parent.left; right: parent.right
+                  leftMargin: 12; rightMargin: 12; bottomMargin: 8 }
+        clip: true
         cellWidth: width / 4
         cellHeight: cellWidth + 22
         model: AppModel

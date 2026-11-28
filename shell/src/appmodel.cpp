@@ -44,6 +44,13 @@ const AppEntry *AppModel::find(const QString &appId) const
     return nullptr;
 }
 
+QString AppModel::resolve(const QStringList &desktopIds) const
+{
+    for (const QString &id : desktopIds)
+        if (find(id)) return id;
+    return QString();
+}
+
 bool AppModel::launch(const QString &appId)
 {
     const AppEntry *e = find(appId);

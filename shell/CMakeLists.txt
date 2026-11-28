@@ -23,7 +23,8 @@ set_source_files_properties(qml/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 qt_add_qml_module(revive-shell
     URI Revive.Shell
     VERSION 1.0
-    QML_FILES qml/Main.qml qml/Theme.qml qml/StatusBar.qml qml/Launcher.qml)
+    QML_FILES qml/Main.qml qml/Theme.qml qml/StatusBar.qml qml/Launcher.qml qml/Dock.qml qml/HomeClock.qml
+    RESOURCES icons/phone.svg icons/messages.svg icons/contacts.svg icons/camera.svg)
 # zwlr_foreign_toplevel_management_v1 client code, generated at build time.
 qt6_generate_wayland_protocol_client_sources(revive-shell FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/protocols/wlr-foreign-toplevel-management-unstable-v1.xml)

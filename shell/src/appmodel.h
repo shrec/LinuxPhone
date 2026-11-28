@@ -18,6 +18,8 @@ public:
     Q_INVOKABLE void reload();
     Q_INVOKABLE bool launch(const QString &appId);
     Q_INVOKABLE bool matches(const QString &appId, const QString &waylandAppId) const;
+    // First of desktopIds that is installed, or an empty string.
+    Q_INVOKABLE QString resolve(const QStringList &desktopIds) const;
 
 private:
     const AppEntry *find(const QString &appId) const;
