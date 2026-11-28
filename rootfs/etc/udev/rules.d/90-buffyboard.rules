@@ -1,3 +1,4 @@
 # The msm display driver replaces the bootloader framebuffer during boot; restart the
-# on-screen keyboard so it draws on the framebuffer that is actually shown.
-SUBSYSTEM=="graphics", KERNEL=="fb0", ACTION=="add", RUN+="/usr/bin/systemctl --no-block restart buffyboard.service"
+# on-screen keyboard so it draws on the framebuffer that is actually shown. try-restart: only if it
+# runs; a plain restart starts it, and it conflicts with revive-shell, which then never starts.
+SUBSYSTEM=="graphics", KERNEL=="fb0", ACTION=="add", RUN+="/usr/bin/systemctl --no-block try-restart buffyboard.service"
