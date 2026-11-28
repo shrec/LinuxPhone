@@ -17,17 +17,19 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    // On-screen keyboard: squeekboard shows itself on text-input focus (screen-keyboard-enabled=true).
-    // Started as a transient user service, not a scope: forked from the shell (phoc's child) it
+    // On-screen keyboard: phosh-osk-stevia (squeekboard's successor; squeekboard left Debian testing
+    // with libgnome-desktop-3) shows itself on text-input focus (screen-keyboard-enabled=true).
+    // Started as a transient user service, not a scope: forked from the shell (phoc's child) the OSK
     // aborted at startup, its glycin icon loader exiting early; spawned by the user manager it runs.
-    // Skipped when squeekboard isn't installed.
-    if (!QStandardPaths::findExecutable("squeekboard").isEmpty()) {
+    // Skipped when it isn't installed.
+    const QString osk = QStringLiteral("phosh-osk-stevia");
+    if (!QStandardPaths::findExecutable(osk).isEmpty()) {
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-        env.remove("QT_WAYLAND_SHELL_INTEGRATION");  // set above for the shell itself; squeekboard must not become one of ours
+        env.remove("QT_WAYLAND_SHELL_INTEGRATION");  // set above for the shell itself; the OSK must not become one of ours
         QProcess p;
         p.setProgram("systemd-run");
         p.setArguments({"--user", "--quiet", "--collect", "--unit=revive-osk", "-E", "WAYLAND_DISPLAY",
-                        "-E", "XDG_SESSION_TYPE", "-E", "FD_MESA_DEBUG", "-E", "GSK_RENDERER", "squeekboard"});
+                        "-E", "XDG_SESSION_TYPE", "-E", "FD_MESA_DEBUG", "-E", "GSK_RENDERER", osk});
         p.setProcessEnvironment(env);
         p.startDetached();
     }
