@@ -15,7 +15,7 @@ Item {
         id: dock
         z: 1  // its toast rises over the grid's bottom rows
         anchors { left: parent.left; right: parent.right; bottom: parent.bottom
-                  leftMargin: 12; rightMargin: 12; bottomMargin: 36 }  // 28 px HomeStrip + 8
+                  leftMargin: 12; rightMargin: 12; bottomMargin: 8 }  // the home strip's exclusion zone already keeps the launcher above it
         onLaunch: (appId) => root.launch(appId)
     }
 

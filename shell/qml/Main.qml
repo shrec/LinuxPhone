@@ -45,6 +45,7 @@ QtObject {
         color: "transparent"
         LayerShell.Window.layer: LayerShell.Window.LayerOverlay
         LayerShell.Window.anchors: LayerShell.Window.AnchorBottom | LayerShell.Window.AnchorLeft | LayerShell.Window.AnchorRight
+        LayerShell.Window.exclusionZone: 28  // app windows end above the strip
         visible: true
 
         Rectangle {
@@ -64,8 +65,10 @@ QtObject {
     }
 
     // The last app window closed: nothing left to show but the launcher.
+    // A new window appeared (incoming call, app started over SSH): leave home so it isn't hidden.
     property Connections toplevels: Connections {
         target: ToplevelModel
         function onRowsRemoved() { if (ToplevelModel.rowCount() === 0) root.home = true }
+        function onRowsInserted() { root.home = false }
     }
 }

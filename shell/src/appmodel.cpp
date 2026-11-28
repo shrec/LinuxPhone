@@ -63,6 +63,7 @@ bool AppModel::launch(const QString &appId)
     env.insert("MOZ_ENABLE_WAYLAND", "1");
     env.insert("XDG_SESSION_TYPE", "wayland");
     env.remove("QT_SCALE_FACTOR");  // apps get their scale from wl_output, not from the shell's setting
+    env.remove("QT_WAYLAND_SHELL_INTEGRATION");  // main.cpp sets layer-shell for the shell itself; apps must not become layer surfaces
     QProcess p;
     p.setProgram("systemd-run");
     p.setArguments(DesktopEntry::systemdRunArgs(*e, QString::number(QRandomGenerator::global()->generate(), 16)));

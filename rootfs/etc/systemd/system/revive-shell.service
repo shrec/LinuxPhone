@@ -19,7 +19,11 @@ UtmpMode=user
 StandardInput=tty-fail
 StandardOutput=journal
 StandardError=journal
-Environment=XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=revive
+# libadwaita (GNOME Calls, Chats, Contacts) reads the color scheme only from the settings portal,
+# which revive does not run. Measured on the Mi A2: a gsettings override of
+# org.gnome.desktop.interface color-scheme is ignored, while this variable turns the apps dark.
+# Apps inherit it because AppModel starts them from the shell's environment.
+Environment=XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=revive ADW_DEBUG_COLOR_SCHEME=prefer-dark
 ExecStart=/usr/bin/phoc -C /etc/phoc/phoc.ini -E /usr/bin/revive-shell
 Restart=on-failure
 RestartSec=1
