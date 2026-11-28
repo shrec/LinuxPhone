@@ -1,0 +1,13 @@
+[Unit]
+# The modem's firmware crashes every ~18 s without a host DIAG router:
+#   "dog_hb.c:266:Task starvation: diag"  (remoteproc recovery, Wi-Fi drops with it)
+Description=Qualcomm DIAG router (keeps the modem from crashing)
+Before=qcom-firmware.service
+
+[Service]
+ExecStart=/usr/bin/diag-router
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

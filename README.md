@@ -21,7 +21,7 @@ Screenshots from the Mi A2, in date order, are in [docs/screenshots/](docs/scree
 
 | Device | Codename | Kernel | Status |
 |---|---|---|---|
-| Xiaomi Mi A2 | `xiaomi-jasmine` | [sdm660-mainline](https://github.com/sdm660-mainline/linux) 7.2 | stage 1 done: display, touch, on-screen keyboard, USB network + SSH (tested on Windows 11), ~240 MB RAM idle · Wi-Fi (iwd) · shell 3a: launcher + apps |
+| Xiaomi Mi A2 | `xiaomi-jasmine` | [sdm660-mainline](https://github.com/sdm660-mainline/linux) 7.2 | stage 1 done: display, touch, on-screen keyboard, USB network + SSH (tested on Windows 11), ~240 MB RAM idle · Wi-Fi (iwd) · modem stable (diag-router); calls/SMS need the IPA data path · shell 3a: launcher + apps |
 
 ## Build
 

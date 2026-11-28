@@ -74,19 +74,30 @@ B=/work/sdk-forky
 if [ ! -d "$B" ]; then
   rm -rf "$B.tmp"
   mmdebstrap --mode=root --arch=arm64 --variant=apt \
-    --include=build-essential,cmake,qt6-base-dev,qt6-declarative-dev,qt6-wayland-dev,qt6-wayland-private-dev,libwayland-dev forky "$B.tmp" http://deb.debian.org/debian
+    --include=build-essential,cmake,qt6-base-dev,qt6-declarative-dev,qt6-wayland-dev,qt6-wayland-private-dev,libwayland-dev,libudev-dev,libqrtr-dev forky "$B.tmp" http://deb.debian.org/debian
   mv "$B.tmp" "$B"
 fi
 cp /etc/resolv.conf "$B/etc/resolv.conf"
 mount -t proc proc "$B/proc"; trap 'umount "$B/proc" 2>/dev/null || true' EXIT
-chroot "$B" sh -ec 'apt-get -q update && apt-get -qy dist-upgrade >/dev/null'  # same Qt as the rootfs
+chroot "$B" sh -ec 'apt-get -q update && apt-get -qy dist-upgrade >/dev/null
+  apt-get -qy install libudev-dev libqrtr-dev >/dev/null'  # same Qt as the rootfs; the install also covers cached chroots
 rm -rf "$B/src" "$B/out"; cp -r "$SRC/shell" "$B/src"
 chroot "$B" sh -ec 'cmake -S /src -B /src/build -DCMAKE_BUILD_TYPE=Release >/dev/null
   cmake --build /src/build -j"$(nproc)"
   ctest --test-dir /src/build --output-on-failure
   DESTDIR=/out cmake --install /src/build --prefix /usr'
+# diag-router answers the modem's DIAG channel; without it the modem dies every ~18 s (see device.conf).
+if [ -n "${DIAG_ROUTER_REF:-}" ]; then
+  DG=/work/diag
+  [ -d "$DG/.git" ] || git clone https://github.com/linux-msm/diag "$DG"
+  git -C "$DG" cat-file -e "$DIAG_ROUTER_REF^{commit}" 2>/dev/null || git -C "$DG" fetch origin
+  git -C "$DG" checkout -q "$DIAG_ROUTER_REF"
+  rm -rf "$B/diag-src"; cp -r "$DG" "$B/diag-src"
+  chroot "$B" sh -ec 'make -C /diag-src diag-router HAVE_LIBUDEV=1 HAVE_LIBQRTR=1 -j"$(nproc)"'
+fi
 umount "$B/proc"; trap - EXIT
 cp -a "$B/out/." "$R/"
+[ -z "${DIAG_ROUTER_REF:-}" ] || install -D -m 755 "$B/diag-src/diag-router" "$R/usr/bin/diag-router"
 
 echo "== initramfs"
 # Mounts the rootfs by filesystem label, ignoring the root= the Android bootloader appends.
