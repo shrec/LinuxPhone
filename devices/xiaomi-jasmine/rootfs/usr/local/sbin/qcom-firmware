@@ -1,22 +1,25 @@
 #!/bin/sh
 # Make the phone's own Qualcomm firmware, kept on its Android partitions, visible to the kernel
-# (mounted read-only, nothing copied), then boot the modem DSP, which runs Wi-Fi.
+# (mounted read-only, nothing copied), then boot the modem DSP (Wi-Fi) and the audio DSP (sound card).
 set -e
 slot=$(sed -n 's/.*androidboot.slot_suffix=\([a-z_]*\).*/\1/p' /proc/cmdline)
 P=/run/firmware-parts F=/run/firmware
 part() { [ -e "/dev/disk/by-partlabel/$1$slot" ] && echo "/dev/disk/by-partlabel/$1$slot" || echo "/dev/disk/by-partlabel/$1"; }
 
-for p in modem bluetooth; do
+for p in modem bluetooth vendor; do
   mkdir -p "$P/$p"
   mountpoint -q "$P/$p" || mount -o ro "$(part $p)" "$P/$p"
 done
 mkdir -p "$F/qca"
 ln -sf "$P"/modem/image/* "$F/"
 ln -sf "$P"/bluetooth/image/* "$F/qca/"
+ln -sf "$P"/vendor/firmware/tas2557_uCDSP.bin "$F/"   # speaker amplifier
 printf %s "$F" > /sys/module/firmware_class/parameters/path
 
-# The modem (MSS) remoteproc failed at boot for lack of firmware; start it now.
+# The modem (MSS) and audio DSP failed at boot for lack of firmware; start them now.
+# The sound card (and the TAS2557 firmware load) probes once the ADSP is up.
 for r in /sys/class/remoteproc/*; do
-  [ "$(cat "$r/firmware")" = mba.mbn ] && [ "$(cat "$r/state")" = offline ] && echo start > "$r/state"
+  case "$(cat "$r/firmware")" in mba.mbn|adsp.mdt) ;; *) continue ;; esac
+  [ "$(cat "$r/state")" = offline ] && echo start > "$r/state"
 done
 exit 0
