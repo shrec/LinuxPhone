@@ -11,7 +11,7 @@ launcher and home gesture; Debian apps run on it (terminal, Calls, Chats, Contac
 wait on the modem, which still crashes on this phone.
 
 <p align="center">
-  <img src="docs/screenshots/2026-11-28-home.png" width="180" alt="home screen">
+  <img src="docs/screenshots/2026-11-28-home-dock.png" width="180" alt="home screen">
   <img src="docs/screenshots/2026-11-28-terminal.png" width="180" alt="terminal">
   <img src="docs/screenshots/2026-11-28-calls.png" width="180" alt="Calls">
   <img src="docs/screenshots/2026-11-28-chats.png" width="180" alt="Chats">

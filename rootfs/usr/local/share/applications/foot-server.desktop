@@ -1,0 +1,5 @@
+[Desktop Entry]
+# Shadows /usr/share/applications/foot-server.desktop: a client/daemon pair is clutter on a phone launcher.
+Type=Application
+Name=foot-server
+NoDisplay=true
