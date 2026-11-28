@@ -1,6 +1,7 @@
 # revive: vision
 
-A light, private, general-purpose computing platform for phones that the user fully controls.
+A light, private, general-purpose computing platform for phones and tablets that the user fully
+controls.
 revive is built on mainline Linux and Debian, so the OS infrastructure and most applications already
 exist. The work is organizing them for mobile devices.
 
@@ -64,3 +65,4 @@ outside servers.
 | App Market, permissions, per-app firewall, sandboxing | later |
 | Desktop convergence | later, on phones with video out |
 | More devices, porting pipeline | after the Mi A2 is complete |
+| Android tablets | same device profiles; the shell needs a tablet layout (landscape, larger scale) |
