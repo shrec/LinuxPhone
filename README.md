@@ -17,7 +17,7 @@ wait on the modem, which still crashes on this phone.
   <img src="docs/screenshots/2026-11-28-chats.png" width="180" alt="Chats">
 </p>
 
-Screenshots from the Mi A2, in date order, are in [docs/screenshots/](docs/screenshots/).
+Screenshots from the Mi A2, in date order, are in [docs/screenshots/](docs/screenshots/). Where revive is going: [docs/VISION.md](docs/VISION.md).
 
 | Device | Codename | Kernel | Status |
 |---|---|---|---|
