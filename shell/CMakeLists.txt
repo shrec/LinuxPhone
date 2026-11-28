@@ -6,7 +6,7 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Qml Quick Test)
 qt_standard_project_setup(REQUIRES 6.5)
 
 # Pure logic, no GUI: unit-tested on its own.
-qt_add_library(revive_core STATIC src/desktopentry.cpp src/desktopentry.h)
+qt_add_library(revive_core STATIC src/desktopentry.cpp src/desktopentry.h src/status.cpp src/status.h)
 target_include_directories(revive_core PUBLIC src)
 target_link_libraries(revive_core PUBLIC Qt6::Core)
 
@@ -14,11 +14,14 @@ enable_testing()
 qt_add_executable(tst_desktopentry tests/tst_desktopentry.cpp)
 target_link_libraries(tst_desktopentry PRIVATE revive_core Qt6::Test)
 add_test(NAME desktopentry COMMAND tst_desktopentry)
+qt_add_executable(tst_status tests/tst_status.cpp)
+target_link_libraries(tst_status PRIVATE revive_core Qt6::Test)
+add_test(NAME status COMMAND tst_status)
 
 if(UNIX AND NOT APPLE)
-find_package(Qt6 REQUIRED COMPONENTS WaylandClient)
+find_package(Qt6 REQUIRED COMPONENTS WaylandClient DBus)
 qt_add_executable(revive-shell src/main.cpp src/appmodel.cpp src/appmodel.h src/iconprovider.h
-    src/toplevelmodel.cpp src/toplevelmodel.h)
+    src/toplevelmodel.cpp src/toplevelmodel.h src/statusmodel.cpp src/statusmodel.h)
 set_source_files_properties(qml/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 qt_add_qml_module(revive-shell
     URI Revive.Shell
@@ -29,7 +32,7 @@ qt_add_qml_module(revive-shell
 qt6_generate_wayland_protocol_client_sources(revive-shell FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/protocols/wlr-foreign-toplevel-management-unstable-v1.xml)
 target_include_directories(revive-shell PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(revive-shell PRIVATE revive_core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::WaylandClient)
+target_link_libraries(revive-shell PRIVATE revive_core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::WaylandClient Qt6::DBus)
 install(TARGETS revive-shell RUNTIME DESTINATION bin)
 endif()
 
@@ -37,9 +40,11 @@ if(WIN32)
   get_filename_component(_cxx_bin "${CMAKE_CXX_COMPILER}" DIRECTORY)
   # Some Windows machines carry other MinGW runtime DLLs in System32, which Windows loads before
   # PATH. Put the matching runtime and Qt DLLs next to the test exe, which is searched first.
-  add_custom_command(TARGET tst_desktopentry POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      $<TARGET_FILE:Qt6::Core> $<TARGET_FILE:Qt6::Test>
-      ${_cxx_bin}/libstdc++-6.dll ${_cxx_bin}/libgcc_s_seh-1.dll ${_cxx_bin}/libwinpthread-1.dll
-      $<TARGET_FILE_DIR:tst_desktopentry>)
+  foreach(_t tst_desktopentry tst_status)
+    add_custom_command(TARGET ${_t} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:Qt6::Core> $<TARGET_FILE:Qt6::Test>
+        ${_cxx_bin}/libstdc++-6.dll ${_cxx_bin}/libgcc_s_seh-1.dll ${_cxx_bin}/libwinpthread-1.dll
+        $<TARGET_FILE_DIR:${_t}>)
+  endforeach()
 endif()
